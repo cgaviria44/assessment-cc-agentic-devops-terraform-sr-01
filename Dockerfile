@@ -1,17 +1,17 @@
-FROM node:15-alpine AS build
+FROM --platform=linux/amd64 node:15-alpine AS build
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN apk add --no-cache python3 make g++ && npm install
 
 COPY . .
 RUN npm run build
 
-FROM nginx:1.21-alpine
+FROM --platform=linux/amd64 nginx:1.21-alpine
 
 COPY --from=build /app/build /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 
